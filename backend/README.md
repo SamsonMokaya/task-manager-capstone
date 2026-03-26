@@ -1,23 +1,43 @@
 # Backend (Flask API)
 
-Python dependencies are managed with **pip** and `requirements.txt` / `requirements-dev.txt` (no Poetry).
+**pip** only: `requirements.txt` and `requirements-dev.txt` (no Poetry). Ruff config: **`ruff.toml`** in this directory.
 
 ## Setup
 
 ```bash
 cd backend
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-dev.txt
-cp .env.example .env   # then edit DATABASE_URL and MONGODB_URI
+cp .env.example .env
 ```
 
-## Lint & format (Ruff)
+Edit `.env`:
 
-Config: **`ruff.toml`** in this directory.
+- `DATABASE_URL` — PostgreSQL URI (required)
+- `MONGODB_URI` — MongoDB URI (required for app startup)
+- `MONGODB_DB_NAME` — optional (default `task_manager`)
+
+## Run
 
 ```bash
-cd backend
+flask --app app:create_app run
+```
+
+On success you should see `PostgreSQL: connected.` and `MongoDB: connected.` before the server listens.
+
+## API (summary)
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/tasks` | List tasks |
+| `POST` | `/tasks` | JSON: `title` (required), `status` optional |
+| `PATCH` | `/tasks/<id>` | JSON: `status` |
+| `DELETE` | `/tasks/<id>` | |
+
+## Lint & format
+
+```bash
 ruff check .
 ruff format .
 ```
@@ -25,21 +45,12 @@ ruff format .
 ## Tests
 
 ```bash
-cd backend
 pytest
 ```
 
-## Pre-commit (optional)
+Mocks `TaskRepository` and `ActivityLogger` — no live databases needed.
 
-From the **repository root** (required by the pre-commit tool):
+## Pre-commit & CI
 
-```bash
-pip install -r backend/requirements-dev.txt
-pre-commit install
-```
-
-Hooks only touch files under `backend/`.
-
-## CI
-
-GitHub Actions only reads workflows from the repo root. The workflow file is **`../.github/workflows/ci.yml`**; it runs the same commands as above with `working-directory: backend`.
+- **Pre-commit** is configured at the [repo root](../README.md#pre-commit); run `pre-commit install` from there after `pip install -r backend/requirements-dev.txt`.
+- **CI**: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs Ruff and pytest in this directory on push/PR.

@@ -8,6 +8,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 from models import ActivityLogger, TaskRepository, TaskStatus
 
+
 # Copilot review: use an enum for activity log action strings so values stay consistent with MongoDB and typos are caught at edit time.
 class ActivityAction(str, Enum):
     """Activity log action types (must match stored strings)."""

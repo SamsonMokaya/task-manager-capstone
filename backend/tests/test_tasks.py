@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock
 
 from models import Task
@@ -13,8 +13,8 @@ def _make_task(**kwargs) -> Task:
         "id": 1,
         "title": "Example",
         "status": "todo",
-        "created_at": datetime.now(timezone.utc),
-        "updated_at": datetime.now(timezone.utc),
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC),
     }
     defaults.update(kwargs)
     return Task(**defaults)
@@ -54,7 +54,9 @@ def test_post_tasks_empty_title_returns_400(client, mock_repo: MagicMock):
     mock_repo.create.assert_not_called()
 
 
-def test_post_tasks_creates_and_returns_201(client, mock_repo: MagicMock, mock_logger: MagicMock):
+def test_post_tasks_creates_and_returns_201(
+    client, mock_repo: MagicMock, mock_logger: MagicMock
+):
     created = _make_task(id=7, title="New task", status="todo")
     mock_repo.create.return_value = created
 
@@ -75,7 +77,9 @@ def test_patch_task_not_found_returns_404(client, mock_repo: MagicMock):
     mock_repo.update_status.assert_called_once_with(99, "done")
 
 
-def test_patch_task_updates_returns_200(client, mock_repo: MagicMock, mock_logger: MagicMock):
+def test_patch_task_updates_returns_200(
+    client, mock_repo: MagicMock, mock_logger: MagicMock
+):
     updated = _make_task(id=3, title="X", status="done")
     mock_repo.update_status.return_value = updated
 
@@ -99,7 +103,9 @@ def test_delete_task_not_found_returns_404(client, mock_repo: MagicMock):
     mock_repo.delete.assert_called_once_with(42)
 
 
-def test_delete_task_success_returns_200(client, mock_repo: MagicMock, mock_logger: MagicMock):
+def test_delete_task_success_returns_200(
+    client, mock_repo: MagicMock, mock_logger: MagicMock
+):
     mock_repo.delete.return_value = True
     res = client.delete("/tasks/42")
     assert res.status_code == 200

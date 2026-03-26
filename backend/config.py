@@ -28,9 +28,7 @@ class Config:
             )
         mongodb_uri = os.environ.get("MONGODB_URI")
         if not mongodb_uri:
-            raise RuntimeError(
-                "MONGODB_URI is required (MongoDB connection string)."
-            )
+            raise RuntimeError("MONGODB_URI is required (MongoDB connection string).")
         mongodb_db_name = os.environ.get("MONGODB_DB_NAME", "task_manager")
         return cls(
             database_url=database_url,
