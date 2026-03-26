@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from flask import Blueprint, current_app, jsonify, request
 
@@ -10,7 +10,7 @@ from models import ActivityLogger, TaskRepository, TaskStatus
 
 
 # Copilot review: use an enum for activity log action strings so values stay consistent with MongoDB and typos are caught at edit time.
-class ActivityAction(str, Enum):
+class ActivityAction(StrEnum):
     """Activity log action types (must match stored strings)."""
 
     CREATE = "create"
