@@ -1,4 +1,4 @@
-# Task Manager (capstone)
+# Task Manager (capstone project)
 
 Flask API with **PostgreSQL** (tasks) and **MongoDB** (activity logs). Frontend and container docs will live in their own folders when added.
 
