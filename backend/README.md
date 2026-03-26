@@ -2,6 +2,8 @@
 
 **pip** only: `requirements.txt` and `requirements-dev.txt` (no Poetry). Ruff config: **`ruff.toml`** in this directory.
 
+Copy-paste commands (run, curl CRUD, docs, pytest): **[COMMANDS.md](COMMANDS.md)**.
+
 ## Setup
 
 ```bash
@@ -34,6 +36,16 @@ On success you should see `PostgreSQL: connected.` and `MongoDB: connected.` bef
 | `POST` | `/tasks` | JSON: `title` (required), `status` optional |
 | `PATCH` | `/tasks/<id>` | JSON: `status` |
 | `DELETE` | `/tasks/<id>` | |
+
+## API docs (OpenAPI)
+
+With the server running, **Spectree** serves interactive docs (paths are under **`/apidoc`** by default):
+
+- **Swagger UI:** [http://127.0.0.1:5000/apidoc/swagger](http://127.0.0.1:5000/apidoc/swagger)
+- **ReDoc:** [http://127.0.0.1:5000/apidoc/redoc](http://127.0.0.1:5000/apidoc/redoc)
+- **OpenAPI JSON:** [http://127.0.0.1:5000/apidoc/openapi.json](http://127.0.0.1:5000/apidoc/openapi.json)
+
+Schemas live in **`openapi.py`**; route handlers use `skip_validation=True` so your existing validation and status codes stay unchanged—docs are for exploration only.
 
 ## Lint & format
 

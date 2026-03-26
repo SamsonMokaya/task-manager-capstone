@@ -15,7 +15,7 @@ select = [
 ignore = ["E501"]
 
 [lint.isort]
-known-first-party = ["models", "config", "routes", "app"]
+known-first-party = ["models", "config", "routes", "app", "openapi"]
 
 [format]
 quote-style = "double"

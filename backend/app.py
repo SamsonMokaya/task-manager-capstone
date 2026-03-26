@@ -8,6 +8,7 @@ from flask import Flask
 
 from config import Config
 from models import ActivityLogger, TaskRepository, verify_mongodb_connection
+from openapi import spec
 from routes import tasks_bp
 
 
@@ -62,6 +63,7 @@ def create_app(
     app.config["ACTIVITY_LOGGER"] = logger
 
     app.register_blueprint(tasks_bp)
+    spec.register(app)
 
     return app
 

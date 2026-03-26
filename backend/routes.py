@@ -5,8 +5,18 @@ from __future__ import annotations
 from enum import StrEnum
 
 from flask import Blueprint, current_app, jsonify, request
+from spectree import Response
 
 from models import ActivityLogger, TaskRepository, TaskStatus
+from openapi import (
+    CreateTaskBody,
+    DeleteOkResponse,
+    ErrorBody,
+    PatchTaskBody,
+    TaskListResponse,
+    TaskResponse,
+    spec,
+)
 
 
 # Copilot review: use an enum for activity log action strings so values stay consistent with MongoDB and typos are caught at edit time.
@@ -63,6 +73,11 @@ tasks_bp = Blueprint("tasks", __name__)
 
 
 @tasks_bp.get("/tasks")
+@spec.validate(
+    resp=Response(HTTP_200=TaskListResponse),
+    tags=["tasks"],
+    skip_validation=True,
+)
 def list_tasks():
     """List all tasks."""
     tasks = _repo().list_all()
@@ -70,6 +85,12 @@ def list_tasks():
 
 
 @tasks_bp.post("/tasks")
+@spec.validate(
+    json=CreateTaskBody,
+    resp=Response(HTTP_201=TaskResponse, HTTP_400=ErrorBody, HTTP_415=ErrorBody),
+    tags=["tasks"],
+    skip_validation=True,
+)
 def create_task():
     """Create a new task."""
     # Copilot review: require `application/json` and respond with 415 instead of failing later with a vague 400 when the body is not JSON.
@@ -107,6 +128,17 @@ def create_task():
 
 
 @tasks_bp.patch("/tasks/<int:task_id>")
+@spec.validate(
+    json=PatchTaskBody,
+    resp=Response(
+        HTTP_200=TaskResponse,
+        HTTP_400=ErrorBody,
+        HTTP_404=ErrorBody,
+        HTTP_415=ErrorBody,
+    ),
+    tags=["tasks"],
+    skip_validation=True,
+)
 def update_task_status(task_id: int):
     """Update task status."""
     # Copilot review: same JSON guard as POST so PATCH rejects non-JSON bodies explicitly.
@@ -149,6 +181,11 @@ def update_task_status(task_id: int):
 
 
 @tasks_bp.delete("/tasks/<int:task_id>")
+@spec.validate(
+    resp=Response(HTTP_200=DeleteOkResponse, HTTP_404=ErrorBody),
+    tags=["tasks"],
+    skip_validation=True,
+)
 def delete_task(task_id: int):
     """Delete a task."""
     deleted = _repo().delete(task_id)
