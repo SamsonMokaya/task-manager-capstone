@@ -6,8 +6,9 @@ Flask API with **PostgreSQL** (tasks) and **MongoDB** (activity logs). Frontend 
 
 | Path | README |
 |------|--------|
-| **[backend/](backend/README.md)** | Python API: venv, pip, env vars, run, tests, Ruff |
-| `frontend/` | *(Vue — add when scaffolded)* |
+| **[backend/](backend/README.md)** | Python API: venv, pip, env vars, run, Docker Compose, tests, Ruff |
+| [`docker-compose.yml`](docker-compose.yml) | Postgres + Mongo + backend (see backend README) |
+| **[frontend/](frontend/README.md)** | Vue 3 + Vite task UI (`TaskBoard.vue`) |
 | `k8s/`, `helm/` | *(add when documented)* |
 
 Each top-level area should document its own setup; this file only covers **repo-wide** tooling below.

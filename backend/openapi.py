@@ -25,6 +25,7 @@ class TaskResponse(BaseModel):
 
     id: int
     title: str
+    description: str = Field(..., description="Task body text (may be empty)")
     status: str
     created_at: str = Field(..., description="ISO 8601 timestamp")
     updated_at: str = Field(..., description="ISO 8601 timestamp")
@@ -38,6 +39,10 @@ class CreateTaskBody(BaseModel):
     """POST /tasks JSON body."""
 
     title: str = Field(..., min_length=1, description="Task title")
+    description: str | None = Field(
+        None,
+        description="Optional longer text (default: empty string)",
+    )
     status: str | None = Field(
         None,
         description="One of: todo, in_progress, done (default: todo)",

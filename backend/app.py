@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
+from flask_cors import CORS
 
 from config import Config
 from models import ActivityLogger, TaskRepository, verify_mongodb_connection
@@ -26,6 +27,16 @@ def create_app(
     mocks; optional ``config`` avoids loading credentials from the environment.
     """
     app = Flask(__name__)
+
+    # Browser clients (Vite dev server, etc.): comma-separated origins in CORS_ORIGINS
+    _cors_origins = os.environ.get(
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
+    CORS(
+        app,
+        resources={r"/*": {"origins": [o.strip() for o in _cors_origins if o.strip()]}},
+    )
 
     if config is None:
         config = Config.from_env()
@@ -64,6 +75,17 @@ def create_app(
 
     app.register_blueprint(tasks_bp)
     spec.register(app)
+
+    @app.get("/")
+    def root():
+        """Landing JSON for `GET /` (browser or curl to the server root)."""
+        return jsonify(
+            {
+                "service": "Task Manager API",
+                "tasks": "/tasks",
+                "docs": "/apidoc/swagger",
+            }
+        )
 
     return app
 

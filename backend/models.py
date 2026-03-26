@@ -40,6 +40,7 @@ class Task:
 
     id: int
     title: str
+    description: str
     status: str
     created_at: datetime
     updated_at: datetime
@@ -49,6 +50,7 @@ class Task:
         return {
             "id": self.id,
             "title": self.title,
+            "description": self.description,
             "status": self.status,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
@@ -60,9 +62,10 @@ def _row_to_task(row: tuple[Any, ...]) -> Task:
     return Task(
         id=row[0],
         title=row[1],
-        status=row[2],
-        created_at=row[3],
-        updated_at=row[4],
+        description=row[2],
+        status=row[3],
+        created_at=row[4],
+        updated_at=row[5],
     )
 
 
@@ -89,20 +92,26 @@ class TaskRepository:
         CREATE TABLE IF NOT EXISTS tasks (
             id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
+            description TEXT NOT NULL DEFAULT '',
             status VARCHAR(64) NOT NULL DEFAULT 'todo',
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
         """
+        migrate = """
+        ALTER TABLE tasks
+        ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+        """
         with self._connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(ddl)
+                cur.execute(migrate)
             conn.commit()
 
     def list_all(self) -> list[Task]:
         """Return all tasks ordered by id."""
         sql = """
-        SELECT id, title, status, created_at, updated_at
+        SELECT id, title, description, status, created_at, updated_at
         FROM tasks
         ORDER BY id ASC
         """
@@ -112,16 +121,21 @@ class TaskRepository:
                 rows = cur.fetchall()
         return [_row_to_task(row) for row in rows]
 
-    def create(self, title: str, status: str = TaskStatus.TODO.value) -> Task:
+    def create(
+        self,
+        title: str,
+        description: str = "",
+        status: str = TaskStatus.TODO.value,
+    ) -> Task:
         """Insert a task and return the persisted row (including id and timestamps)."""
         sql = """
-        INSERT INTO tasks (title, status)
-        VALUES (%s, %s)
-        RETURNING id, title, status, created_at, updated_at
+        INSERT INTO tasks (title, description, status)
+        VALUES (%s, %s, %s)
+        RETURNING id, title, description, status, created_at, updated_at
         """
         with self._connect() as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (title, status))
+                cur.execute(sql, (title, description, status))
                 row = cur.fetchone()
             conn.commit()
         assert row is not None
@@ -133,7 +147,7 @@ class TaskRepository:
         UPDATE tasks
         SET status = %s, updated_at = NOW()
         WHERE id = %s
-        RETURNING id, title, status, created_at, updated_at
+        RETURNING id, title, description, status, created_at, updated_at
         """
         with self._connect() as conn:
             with conn.cursor() as cur:

@@ -69,6 +69,21 @@ def _validate_title(title: str | None) -> tuple[str | None, tuple[dict, int] | N
     return title.strip(), None
 
 
+def _validate_description(value: object) -> tuple[str | None, tuple[dict, int] | None]:
+    """Validate optional description; return (str, None) or (None, error)."""
+    if value is None:
+        return "", None
+    if not isinstance(value, str):
+        return None, (
+            {
+                "error": "invalid_description",
+                "message": "Description must be a string",
+            },
+            400,
+        )
+    return value.strip(), None
+
+
 tasks_bp = Blueprint("tasks", __name__)
 
 
@@ -118,7 +133,12 @@ def create_task():
         body, code = err
         return jsonify(body), code
 
-    task = _repo().create(title, status)
+    description, err = _validate_description(payload.get("description"))
+    if err:
+        body, code = err
+        return jsonify(body), code
+
+    task = _repo().create(title, description, status)
     _activity_logger().log(
         ActivityAction.CREATE.value,
         task.id,

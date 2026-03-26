@@ -12,12 +12,21 @@ def _make_task(**kwargs) -> Task:
     defaults: dict = {
         "id": 1,
         "title": "Example",
+        "description": "",
         "status": "todo",
         "created_at": datetime.now(UTC),
         "updated_at": datetime.now(UTC),
     }
     defaults.update(kwargs)
     return Task(**defaults)
+
+
+def test_get_root_returns_200(client):
+    res = client.get("/")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["service"] == "Task Manager API"
+    assert data["tasks"] == "/tasks"
 
 
 def test_get_tasks_returns_200_and_list(client, mock_repo: MagicMock):
@@ -30,6 +39,7 @@ def test_get_tasks_returns_200_and_list(client, mock_repo: MagicMock):
     data = res.get_json()
     assert len(data) == 2
     assert data[0]["title"] == "A"
+    assert data[0]["description"] == ""
     mock_repo.list_all.assert_called_once()
 
 
@@ -54,6 +64,34 @@ def test_post_tasks_empty_title_returns_400(client, mock_repo: MagicMock):
     mock_repo.create.assert_not_called()
 
 
+def test_post_tasks_with_description_creates_and_returns_201(
+    client, mock_repo: MagicMock, mock_logger: MagicMock
+):
+    created = _make_task(
+        id=8,
+        title="With desc",
+        description="Do the thing",
+        status="todo",
+    )
+    mock_repo.create.return_value = created
+
+    res = client.post(
+        "/tasks",
+        json={"title": "With desc", "description": "Do the thing"},
+    )
+    assert res.status_code == 201
+    body = res.get_json()
+    assert body["description"] == "Do the thing"
+    mock_repo.create.assert_called_once_with("With desc", "Do the thing", "todo")
+
+
+def test_post_tasks_invalid_description_type_returns_400(client, mock_repo: MagicMock):
+    res = client.post("/tasks", json={"title": "Ok", "description": 123})
+    assert res.status_code == 400
+    assert res.get_json()["error"] == "invalid_description"
+    mock_repo.create.assert_not_called()
+
+
 def test_post_tasks_creates_and_returns_201(
     client, mock_repo: MagicMock, mock_logger: MagicMock
 ):
@@ -65,7 +103,8 @@ def test_post_tasks_creates_and_returns_201(
     body = res.get_json()
     assert body["id"] == 7
     assert body["title"] == "New task"
-    mock_repo.create.assert_called_once_with("New task", "todo")
+    assert body["description"] == ""
+    mock_repo.create.assert_called_once_with("New task", "", "todo")
     mock_logger.log.assert_called_once()
     assert mock_logger.log.call_args[0][0] == "create"
 

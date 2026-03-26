@@ -2,8 +2,6 @@
 
 **pip** only: `requirements.txt` and `requirements-dev.txt` (no Poetry). Ruff config: **`ruff.toml`** in this directory.
 
-Copy-paste commands (run, curl CRUD, docs, pytest): **[COMMANDS.md](COMMANDS.md)**.
-
 ## Setup
 
 ```bash
@@ -28,12 +26,33 @@ flask --app app:create_app run
 
 On success you should see `PostgreSQL: connected.` and `MongoDB: connected.` before the server listens.
 
+### CORS (browser / Vue dev server)
+
+The API enables **Flask-CORS** for origins in **`CORS_ORIGINS`** (comma-separated). Default: `http://localhost:5173` and `http://127.0.0.1:5173` (Vite). Override if your frontend runs elsewhere, e.g.:
+
+```bash
+export CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:3000
+```
+
+## Docker Compose
+
+From the **repository root** (not `backend/`):
+
+```bash
+docker compose up
+```
+
+Use `docker compose up --build` after changing the Dockerfile or dependencies.
+
+This starts **PostgreSQL** (named volume `postgres_data`), **MongoDB** (`mongo_data`), and the **backend** (Gunicorn + `wsgi:app`). The API is on **`http://localhost:5001`** (e.g. `/tasks`).
+
 ## API (summary)
 
 | Method | Path | Notes |
 |--------|------|--------|
+| `GET` | `/` | Service info and links (JSON) |
 | `GET` | `/tasks` | List tasks |
-| `POST` | `/tasks` | JSON: `title` (required), `status` optional |
+| `POST` | `/tasks` | JSON: `title` (required), `description` optional, `status` optional |
 | `PATCH` | `/tasks/<id>` | JSON: `status` |
 | `DELETE` | `/tasks/<id>` | |
 
@@ -56,6 +75,24 @@ ruff format .
 
 ## Tests
 
+Tests are in **`tests/`**. They use **mocked** `TaskRepository` and `ActivityLogger` (`conftest.py`), so they never talk to PostgreSQL or MongoDB. You do **not** need a special env flag or Compose stack running—`create_app` is called with fake config and injected mocks.
+
+### Virtual environment (same as CI)
+
+From **`backend/`** after [Setup](#setup):
+
 ```bash
 pytest
 ```
+
+With dev tools (Ruff) installed: `pip install -r requirements-dev.txt`, then `ruff check .` as in [Lint & format](#lint--format).
+
+### Docker
+
+From the **repository root**, run pytest inside the backend image. **`--no-deps`** skips Postgres and Mongo (tests do not need them):
+
+```bash
+docker compose run --rm --no-deps backend pytest
+```
+
+Build the image first if you have not already (`docker compose build` or `docker compose up --build`).
