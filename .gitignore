@@ -1,0 +1,7 @@
+.env
+backend/.env
+backend/.venv/
+**/__pycache__/
+backend/.pytest_cache/
+.ruff_cache/
+.pre-commit-cache/
