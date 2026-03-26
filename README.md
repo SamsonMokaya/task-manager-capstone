@@ -27,4 +27,4 @@ pre-commit run --all-files
 
 ## CI
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on push/PR: install deps and **Ruff + pytest** with `working-directory: backend`. No local `pre-commit install` required for CI.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on push/PR: install deps and **Ruff + pytest** with `working-directory: backend`.

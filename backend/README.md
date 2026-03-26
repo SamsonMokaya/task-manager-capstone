@@ -59,10 +59,3 @@ ruff format .
 ```bash
 pytest
 ```
-
-Mocks `TaskRepository` and `ActivityLogger` — no live databases needed.
-
-## Pre-commit & CI
-
-- **Pre-commit** is configured at the [repo root](../README.md#pre-commit); run `pre-commit install` from there after `pip install -r backend/requirements-dev.txt`.
-- **CI**: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs Ruff and pytest in this directory on push/PR.
