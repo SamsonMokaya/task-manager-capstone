@@ -1,0 +1,12 @@
+.env
+backend/.env
+
+# Frontend (Vite): ignore env files except the committed template
+# https://vite.dev/guide/env-and-mode.html — copy .env.example → .env.development locally
+frontend/.env*
+!frontend/.env.example
+backend/.venv/
+**/__pycache__/
+backend/.pytest_cache/
+.ruff_cache/
+.pre-commit-cache/

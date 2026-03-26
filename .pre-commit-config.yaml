@@ -1,0 +1,19 @@
+# Install: pip install -r backend/requirements-dev.txt && pre-commit install
+# (Config file must stay at repo root for the pre-commit CLI.)
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend/.*\.py$
+      - id: ruff-format
+        files: ^backend/.*\.py$
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^backend/.venv/
+      - id: end-of-file-fixer
+        exclude: ^backend/.venv/

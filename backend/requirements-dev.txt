@@ -1,0 +1,4 @@
+# Dev tooling (lint, git hooks). Install with:
+#   pip install -r requirements.txt -r requirements-dev.txt
+ruff>=0.9.0
+pre-commit>=4.0.0
