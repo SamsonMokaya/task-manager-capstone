@@ -94,5 +94,3 @@ From the **repository root**, run pytest inside the backend image. **`--no-deps`
 ```bash
 docker compose run --rm --no-deps backend pytest
 ```
-
-Build the image first if you have not already (`docker compose build` or `docker compose up --build`).
