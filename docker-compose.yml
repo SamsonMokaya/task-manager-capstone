@@ -1,6 +1,8 @@
 services:
   postgres:
     image: postgres:16-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: taskmanager
       POSTGRES_PASSWORD: taskmanager
@@ -16,6 +18,8 @@ services:
 
   mongo:
     image: mongo:7
+    ports:
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -29,6 +33,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    # Host 5001 avoids macOS Control Center / AirPlay often binding :5000; use "5000:5000" if you free 5000.
     ports:
       - "5001:5000"
     environment:

@@ -1,0 +1,13 @@
+# Non-secret app config. DATABASE_URL / MONGODB_URI point at Postgres + Mongo
+# reachable from the cluster (see k8s/README.md — usually Docker Compose on the host).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-manager-backend-config
+  labels:
+    app: task-manager-backend
+data:
+  # Minikube → host: use host.minikube.internal (macOS/Windows; see README for Linux).
+  DATABASE_URL: postgresql://taskmanager:taskmanager@host.minikube.internal:5432/task_manager
+  MONGODB_URI: mongodb://host.minikube.internal:27017/
+  MONGODB_DB_NAME: task_manager

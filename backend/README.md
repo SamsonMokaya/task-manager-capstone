@@ -44,7 +44,7 @@ docker compose up
 
 Use `docker compose up --build` after changing the Dockerfile or dependencies.
 
-This starts **PostgreSQL** (named volume `postgres_data`), **MongoDB** (`mongo_data`), and the **backend** (Gunicorn + `wsgi:app`). The API is on **`http://localhost:5001`** (e.g. `/tasks`).
+This starts **PostgreSQL** (named volume `postgres_data`), **MongoDB** (`mongo_data`), and the **backend** (Gunicorn + `wsgi:app`). The API is on **`http://localhost:5001`** on the host (maps to port 5000 in the container; see `docker-compose.yml`).
 
 ## API (summary)
 
@@ -58,11 +58,11 @@ This starts **PostgreSQL** (named volume `postgres_data`), **MongoDB** (`mongo_d
 
 ## API docs (OpenAPI)
 
-With the server running, **Spectree** serves interactive docs (paths are under **`/apidoc`** by default):
+With the server running, **Spectree** serves interactive docs (paths are under **`/apidoc`** by default). Use the **same host and port** as your API (e.g. **`http://127.0.0.1:5000`** for local `flask run`, **`http://127.0.0.1:5001`** for Docker Compose):
 
-- **Swagger UI:** [http://127.0.0.1:5000/apidoc/swagger](http://127.0.0.1:5000/apidoc/swagger)
-- **ReDoc:** [http://127.0.0.1:5000/apidoc/redoc](http://127.0.0.1:5000/apidoc/redoc)
-- **OpenAPI JSON:** [http://127.0.0.1:5000/apidoc/openapi.json](http://127.0.0.1:5000/apidoc/openapi.json)
+- **Swagger UI:** `http://127.0.0.1:<port>/apidoc/swagger`
+- **ReDoc:** `http://127.0.0.1:<port>/apidoc/redoc`
+- **OpenAPI JSON:** `http://127.0.0.1:<port>/apidoc/openapi.json`
 
 Schemas live in **`openapi.py`**; route handlers use `skip_validation=True` so your existing validation and status codes stay unchanged—docs are for exploration only.
 
