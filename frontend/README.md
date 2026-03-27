@@ -12,7 +12,7 @@ Task list UI in **`TaskBoard.vue`**: load tasks, add (title + description), chan
 
 2. Edit **`.env.development`** and set **`VITE_API_BASE_URL`** to your Flask base URL **with no trailing slash**:
 
-   - **Docker Compose backend:** `http://127.0.0.1:5001`
+   - **Docker Compose backend:** `http://127.0.0.1:5001` (host port; container listens on 5000)
    - **Local `flask run`:** `http://127.0.0.1:5000`
    - **Minikube backend:** use the URL from `minikube service task-manager-backend --url` (no trailing slash), or `http://<minikube-ip>:30080` — see [k8s/README.md](../k8s/README.md)
 
