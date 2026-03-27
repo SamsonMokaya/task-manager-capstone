@@ -1,0 +1,21 @@
+# Default values for task-manager.
+# ConfigMap with DATABASE_URL / MONGODB_URI must exist separately (see k8s/configmap.yaml).
+
+replicaCount: 2
+
+image:
+  repository: task-manager-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 5000
+  nodePort: 30080
+
+# Must match an existing ConfigMap (e.g. kubectl apply -f k8s/configmap.yaml).
+configMapName: task-manager-backend-config
+
+# Resource names and selector label (aligned with plain k8s manifests).
+name: task-manager-backend
